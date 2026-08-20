@@ -17,6 +17,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { createAccount } from "@/lib/actions/user.actions";
 
 type FormType = "sign-in" | "sign-up";
 
@@ -41,6 +42,7 @@ const authFormSchema = (formType: FormType) => {
 const AuthForm = ({ type }: { type: FormType }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [accountId, setAccountId] = useState(null);
 
   const formSchema = authFormSchema(type);
 
@@ -57,9 +59,14 @@ const AuthForm = ({ type }: { type: FormType }) => {
     setErrorMessage("");
 
     try {
-      console.log(data);
+      const user = await createAccount({
+        fullName: data.fullName || "",
+        email: data.email,
+      });
+
+      setAccountId(user.accountId);
     } catch (error) {
-      setErrorMessage("Something went wrong.");
+      setErrorMessage("Failed to create account please try again.");
     } finally {
       setIsLoading(false);
     }
